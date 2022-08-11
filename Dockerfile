@@ -46,17 +46,10 @@ FROM ubuntu:jammy
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:git-core/ppa && \
-    apt-get update -y && \
     apt-get install --no-install-recommends -y \
-        ninja-build cmake bison git \
-        zip unzip bzip2 \
-        autotools-dev automake \
-        libpcre3-dev libopenblas-dev \
-        zlib1g-dev libbz2-dev libssl-dev uuid-dev libffi-dev libreadline-dev \
-        libsqlite3-dev libbz2-dev libncurses5-dev libreadline6-dev \
-        libgdbm-dev libgdbm-compat-dev liblzma-dev wget && \
+        ninja-build cmake make bison flex \
+        tar xz-utils gzip zip unzip bzip2 \
+        ca-certificates wget git && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
