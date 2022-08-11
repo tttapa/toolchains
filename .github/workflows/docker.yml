@@ -18,7 +18,7 @@ jobs:
 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
@@ -60,7 +60,7 @@ jobs:
 
       # Build and load Docker image with Buildx
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
+      - name: Build and load Docker image
         id: build
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
@@ -68,6 +68,8 @@ jobs:
           target: gcc-build
           load: true
           tags: ${{ env.TEMPORARY_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Archive the toolchain in the Docker container and copy it to the build environment
       - name: Export toolchain
@@ -105,6 +107,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
