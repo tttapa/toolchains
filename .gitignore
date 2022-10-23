@@ -1,0 +1,8 @@
+old
+download
+build
+staging
+x-tools
+*.tgz
+*.tar.gz
+*.tar.xz

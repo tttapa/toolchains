@@ -1,0 +1,2 @@
+arch = 'linux_aarch64'
+toolchain_file = '../../../toolchains/cross/toolchain/aarch64-rpi3-linux-gnu.cmake'
