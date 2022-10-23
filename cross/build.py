@@ -1,19 +1,9 @@
 import dataclasses
 import os
 from subprocess import run
+from platform_config import PlatformConfig
 
 this_dir = os.path.dirname(__file__)
-
-
-@dataclasses.dataclass
-class PlatformConfig:
-    cpu: str
-    vendor: str
-    kernel: str
-    system: str
-
-    def __str__(self):
-        return "-".join(dataclasses.astuple(self))
 
 
 @dataclasses.dataclass
@@ -21,7 +11,7 @@ class PythonVersion:
     major: int
     minor: int
     patch: int
-    suffix: str = ''
+    suffix: str = ""
 
 
 platforms = [
@@ -36,19 +26,22 @@ py_versions = [
     PythonVersion(3, 8, 15),
     PythonVersion(3, 9, 15),
     PythonVersion(3, 10, 8),
-    PythonVersion(3, 11, 0, 'rc2'),
+    PythonVersion(3, 11, 0, "rc2"),
 ]
 
 for py in py_versions:
     for platform in platforms:
         cmd = [
-            'make',
-            '-C',
+            "make",
+            "-C",
             this_dir,
-            f'HOST_TRIPLE={platform}',
-            f'PYTHON_VERSION={py.major}.{py.minor}.{py.patch}',
-            f'PYTHON_SUFFIX={py.suffix}',
-            f'BUILD_PYTHON=python{py.major}.{py.minor}',
+            # "python",
+            # "cmake",
+            # "py-build-cmake",
+            f"HOST_TRIPLE={platform}",
+            f"PYTHON_VERSION={py.major}.{py.minor}.{py.patch}",
+            f"PYTHON_SUFFIX={py.suffix}",
+            f"BUILD_PYTHON=python{py.major}.{py.minor}",
         ]
         print(cmd)
         run(cmd, check=True)

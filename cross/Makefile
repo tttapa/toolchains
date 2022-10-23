@@ -6,6 +6,7 @@ BUILD_PYTHON    := python3.10
 
 TOOLCHAIN       := x-tools-$(HOST_TRIPLE).tar.xz
 TOOLCHAIN_URL   := https://github.com/tttapa/toolchains/releases/latest/download
+CMAKE_DIR       := cmake
 PYTHON_FULL     := Python-$(PYTHON_VERSION)$(PYTHON_SUFFIX)
 PYTHON_MAJOR    := $(word 1,$(subst ., ,$(PYTHON_VERSION)))
 PYTHON_MINOR    := $(word 2,$(subst ., ,$(PYTHON_VERSION)))
@@ -18,9 +19,9 @@ DOWNLOAD_DIR    := download
 
 export PATH := $(BASE_DIR)/x-tools/$(HOST_TRIPLE)/bin:$(PATH)
 
-all: python
+all: python cmake py-build-cmake
 
-.PHONY: all python clean toolchain
+.PHONY: all python clean toolchain cmake
 
 # Directories
 $(DOWNLOAD_DIR)/.dirstamp:
@@ -33,6 +34,10 @@ $(PY_STAGING_DIR)/.dirstamp:
 
 $(PY_BUILD_DIR)/.dirstamp:
 	mkdir -p $(PY_BUILD_DIR)
+	touch $@
+
+$(CMAKE_DIR)/.dirstamp:
+	mkdir -p $(CMAKE_DIR)
 	touch $@
 
 # Toolchain
@@ -75,6 +80,16 @@ $(PYTHON_BIN): $(PYTHON_MAKEFILE) $(PY_STAGING_DIR)/.dirstamp
 	$(MAKE) -C $(PY_BUILD_DIR)/$(PYTHON_FULL) altbininstall inclinstall libainstall bininstall DESTDIR=$(BASE_DIR)/$(PY_STAGING_DIR)
 
 python: $(PYTHON_BIN)
+
+$(CMAKE_DIR)/$(HOST_TRIPLE).toolchain.cmake: $(CMAKE_DIR)/.dirstamp
+	$(BUILD_PYTHON) gen-cmake-toolchain.py $(HOST_TRIPLE) $@
+
+cmake: $(CMAKE_DIR)/$(HOST_TRIPLE).toolchain.cmake
+
+$(CMAKE_DIR)/$(HOST_TRIPLE).py-build-cmake.cross.toml: $(CMAKE_DIR)/.dirstamp
+	$(BUILD_PYTHON) gen-py-build-cmake-cross-config.py $(HOST_TRIPLE) $@
+
+py-build-cmake: $(CMAKE_DIR)/$(HOST_TRIPLE).py-build-cmake.cross.toml
 
 # Clean
 clean:

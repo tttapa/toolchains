@@ -3,6 +3,8 @@ download
 build
 staging
 x-tools
+cross/cmake
 *.tgz
 *.tar.gz
 *.tar.xz
+__pycache__
