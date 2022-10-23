@@ -29,7 +29,18 @@ RUN git show --summary && \
     make install &&  \
     cd .. && rm -rf build
 ENV PATH=/home/develop/.local/bin:$PATH
-WORKDIR /home/develop 
+WORKDIR /home/develop
+
+# Patches
+# https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=280707&p=1700861#p1700861
+RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils-source_2.39-8_all.deb && \
+    mkdir binutils && cd binutils && \
+    ar x ../binutils-source_2.39-8_all.deb && \
+    tar xf data.tar.xz && \
+    mkdir -p patches/binutils/2.39 && \
+    cp usr/src/binutils/patches/129_multiarch_libpath.patch \
+        patches/binutils/2.39 && \
+    rm data.tar.xz
 
 # Toolchain --------------------------------------------------------------------
 
@@ -39,14 +50,14 @@ ARG HOST_TRIPLE
 
 # Build the toolchain
 COPY ${HOST_TRIPLE}.defconfig .
-RUN ct-ng ${HOST_TRIPLE}.defconfig
-RUN ct-ng build || { cat build.log && false; } && rm -rf .build
+COPY ${HOST_TRIPLE}.env .
+RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
+RUN . ./${HOST_TRIPLE}.env && \
+    ct-ng build || { cat build.log && false; } && rm -rf .build
 
 # Build container --------------------------------------------------------------
 
 FROM ubuntu:jammy
-
-ARG HOST_TRIPLE
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
