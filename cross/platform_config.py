@@ -62,6 +62,7 @@ def cpack_debian_architecture(cfg: PlatformConfig):
         warnings.warn("Unknown Debian architecture")
     return arch
 
+
 def python_arch(cfg: PlatformConfig):
     archs = {
         "armv6": "armv6l",
@@ -70,4 +71,11 @@ def python_arch(cfg: PlatformConfig):
         "armv8": "armv7l",
     }
     arch = archs.get(cfg.cpu) or cfg.cpu
-    return '_'.join((cfg.kernel, arch))
+    os = cfg.kernel
+    if os == "linux":
+        os = {
+            "rpi": "manylinux_2_27",
+            "rpi3": "manylinux_2_27",
+            "centos7": "manylinux_2_17",
+        }.get(cfg.vendor, os)
+    return "_".join((os, arch))
