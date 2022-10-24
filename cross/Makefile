@@ -93,4 +93,4 @@ py-build-cmake: $(CMAKE_DIR)/$(HOST_TRIPLE).py-build-cmake.cross.toml
 
 # Clean
 clean:
-	rm -rf $(PY_BUILD_DIR) $(PY_STAGING_DIR)
+	rm -rf $(PY_BUILD_DIR) $(PY_STAGING_DIR) $(CMAKE_DIR)
