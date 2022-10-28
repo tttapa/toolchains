@@ -17,6 +17,18 @@ RUN useradd -m develop && echo "develop:develop" | chpasswd && \
 USER develop
 WORKDIR /home/develop
 
+# Build autoconf
+RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz && \
+    tar xzf autoconf-2.71.tar.gz && \
+    rm autoconf-2.71.tar.gz && \
+    cd autoconf-2.71 && \
+    ./configure --prefix=/home/develop/.local && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf autoconf-2.71
+ENV PATH=/home/develop/.local/bin:$PATH
+
 # Build crosstool-ng
 RUN git clone -b master --single-branch --depth 1 \
         https://github.com/crosstool-ng/crosstool-ng.git
@@ -28,7 +40,6 @@ RUN git show --summary && \
     make -j$(($(nproc) * 2)) && \
     make install &&  \
     cd .. && rm -rf build
-ENV PATH=/home/develop/.local/bin:$PATH
 WORKDIR /home/develop
 
 # Patches
