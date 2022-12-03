@@ -17,10 +17,8 @@ RUN useradd -m develop && echo "develop:develop" | chpasswd && \
 USER develop
 WORKDIR /home/develop
 
-# Build autoconf
-RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz && \
-    tar xzf autoconf-2.71.tar.gz && \
-    rm autoconf-2.71.tar.gz && \
+# Install autoconf
+RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz -O- | tar xz && \
     cd autoconf-2.71 && \
     ./configure --prefix=/home/develop/.local && \
     make -j$(nproc) && \
