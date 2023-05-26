@@ -42,15 +42,11 @@ WORKDIR /home/develop
 
 # Patches
 # https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=280707&p=1700861#p1700861
-RUN mkdir binutils && cd binutils && \
-    wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils-source_2.39-8_all.deb && \
-    ar x binutils-source_2.39-8_all.deb && \
-    tar xf data.tar.xz && \
-    mkdir -p ../patches/binutils/2.39 && \
-    cp usr/src/binutils/patches/129_multiarch_libpath.patch \
-        ../patches/binutils/2.39 && \
-    cd .. && \
-    rm -rf binutils
+RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.40-2.debian.tar.xz -O- | \
+    tar xJ debian/patches/129_multiarch_libpath.patch && \
+    mkdir -p patches/binutils/2.40 && \
+    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.40 && \
+    rm -rf debian
 
 # Toolchain --------------------------------------------------------------------
 
