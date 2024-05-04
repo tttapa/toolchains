@@ -28,6 +28,7 @@ jobs:
           - 'armv7-neon-linux-gnueabihf'
           - 'armv8-rpi3-linux-gnueabihf'
           - 'x86_64-centos7-linux-gnu'
+          - 'x86_64-bionic-linux-gnu'
 
     steps:
       - name: Checkout repository
