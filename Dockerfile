@@ -1,3 +1,14 @@
+# Python config ----------------------------------------------------------------
+
+FROM python:3 as config
+
+ARG HOST_TRIPLE
+
+COPY *.py .
+RUN mkdir /config-${HOST_TRIPLE}
+RUN python3 gen-cmake-toolchain.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.toolchain.cmake
+RUN python3 gen-conan-profile.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.profile.conan
+
 # Crosstool-NG -----------------------------------------------------------------
 
 FROM centos:7 as ct-ng
@@ -60,6 +71,7 @@ COPY ${HOST_TRIPLE}.env .
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
+COPY --from=config /config-${HOST_TRIPLE}/* /home/develop/x-tools
 
 # Build container --------------------------------------------------------------
 
@@ -84,4 +96,4 @@ USER develop
 WORKDIR /home/develop
 
 # Copy the toolchain
-COPY --from=gcc-build /home/develop/x-tools /home/develop/opt
+COPY --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
