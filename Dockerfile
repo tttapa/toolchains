@@ -1,3 +1,14 @@
+# Python config ----------------------------------------------------------------
+
+FROM python:3 as config
+
+ARG HOST_TRIPLE
+
+COPY *.py .
+RUN mkdir /config-${HOST_TRIPLE}
+RUN python3 gen-cmake-toolchain.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.toolchain.cmake
+RUN python3 gen-conan-profile.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.profile.conan
+
 # Crosstool-NG -----------------------------------------------------------------
 
 FROM centos:7 as ct-ng
@@ -18,13 +29,13 @@ USER develop
 WORKDIR /home/develop
 
 # Install autoconf
-RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz -O- | tar xz && \
-    cd autoconf-2.71 && \
+RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz -O- | tar xz && \
+    cd autoconf-2.72 && \
     ./configure --prefix=/home/develop/.local && \
     make -j$(nproc) && \
     make install && \
     cd .. && \
-    rm -rf autoconf-2.71
+    rm -rf autoconf-2.72
 ENV PATH=/home/develop/.local/bin:$PATH
 
 # Build crosstool-ng
@@ -42,10 +53,10 @@ WORKDIR /home/develop
 
 # Patches
 # https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=280707&p=1700861#p1700861
-RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.40-2.debian.tar.xz -O- | \
+RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.41-6.debian.tar.xz -O- | \
     tar xJ debian/patches/129_multiarch_libpath.patch && \
-    mkdir -p patches/binutils/2.40 && \
-    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.40 && \
+    mkdir -p patches/binutils/2.41 && \
+    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.41 && \
     rm -rf debian
 
 # Toolchain --------------------------------------------------------------------
@@ -60,6 +71,7 @@ COPY ${HOST_TRIPLE}.env .
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
+COPY --from=config /config-${HOST_TRIPLE}/* /home/develop/x-tools
 
 # Build container --------------------------------------------------------------
 
@@ -84,4 +96,4 @@ USER develop
 WORKDIR /home/develop
 
 # Copy the toolchain
-COPY --from=gcc-build /home/develop/x-tools /home/develop/opt
+COPY --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
