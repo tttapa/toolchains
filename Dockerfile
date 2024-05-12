@@ -64,10 +64,12 @@ RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.41-6.debi
 FROM ct-ng as gcc-build
 
 ARG HOST_TRIPLE
+ARG GCC_VERSION=""
 
 # Build the toolchain
 COPY ${HOST_TRIPLE}.defconfig .
 COPY ${HOST_TRIPLE}.env .
+RUN [ -n "${GCC_VERSION}" ] && { echo "CT_GCC_V_${GCC_VERSION}=y" >> ${HOST_TRIPLE}.defconfig; }
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
