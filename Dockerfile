@@ -3,11 +3,12 @@
 FROM python:3 as config
 
 ARG HOST_TRIPLE
+ARG GCC_VERSION
 
 COPY *.py .
 RUN mkdir /config-${HOST_TRIPLE}
 RUN python3 gen-cmake-toolchain.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.toolchain.cmake
-RUN python3 gen-conan-profile.py ${HOST_TRIPLE} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.profile.conan
+RUN python3 gen-conan-profile.py ${HOST_TRIPLE} ${GCC_VERSION} /config-${HOST_TRIPLE}/${HOST_TRIPLE}.profile.conan
 
 # Crosstool-NG -----------------------------------------------------------------
 
@@ -64,7 +65,7 @@ RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.41-6.debi
 FROM ct-ng as gcc-build
 
 ARG HOST_TRIPLE
-ARG GCC_VERSION=""
+ARG GCC_VERSION
 
 # Build the toolchain
 COPY --chown=develop:develop ${HOST_TRIPLE}.defconfig .
