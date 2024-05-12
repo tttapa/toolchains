@@ -67,13 +67,13 @@ ARG HOST_TRIPLE
 ARG GCC_VERSION=""
 
 # Build the toolchain
-COPY ${HOST_TRIPLE}.defconfig .
-COPY ${HOST_TRIPLE}.env .
+COPY --chown=develop:develop ${HOST_TRIPLE}.defconfig .
+COPY --chown=develop:develop ${HOST_TRIPLE}.env .
 RUN [ -n "${GCC_VERSION}" ] && { echo "CT_GCC_V_${GCC_VERSION}=y" >> ${HOST_TRIPLE}.defconfig; }
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
-COPY --from=config /config-${HOST_TRIPLE}/* /home/develop/x-tools
+COPY --chown=develop:develop --from=config /config-${HOST_TRIPLE}/* /home/develop/x-tools
 
 # Build container --------------------------------------------------------------
 
@@ -98,4 +98,4 @@ USER develop
 WORKDIR /home/develop
 
 # Copy the toolchain
-COPY --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
+COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
