@@ -1,4 +1,4 @@
-name: Docker
+name: Build and publish Docker
 
 on:
   release:
@@ -15,7 +15,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,6 +29,7 @@ jobs:
           - 'x86_64-centos7-linux-gnu'
           - 'x86_64-bionic-linux-gnu'
         gcc-version:
+          - '14'
           - '13'
         include:
           - triple: x86_64-bionic-linux-gnu
@@ -67,10 +67,10 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=ref,event=pr
-            type=ref,event=branch,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '13' }}
-            type=ref,event=tag,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '13' }}
-            type=ref,event=pr,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '13' }}
-            type=raw,value=${{ matrix.triple }},prefix=,enable=${{ matrix.gcc-version == '13' }}
+            type=ref,event=branch,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '14' }}
+            type=ref,event=tag,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '14' }}
+            type=ref,event=pr,prefix=${{ matrix.triple }}-,enable=${{ matrix.gcc-version == '14' }}
+            type=raw,value=${{ matrix.triple }},prefix=,enable=${{ matrix.gcc-version == '14' }}
             type=raw,value=${{ matrix.triple }}-gcc${{ matrix.gcc-version }},prefix=
 
       # Build and load Docker image with Buildx
@@ -86,8 +86,8 @@ jobs:
             GCC_VERSION=${{ matrix.gcc-version }}
           load: true
           tags: ${{ env.TEMPORARY_TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=${{ matrix.triple }}-gcc${{ matrix.gcc-version }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.triple }}-gcc${{ matrix.gcc-version }}
 
       # Archive the toolchain in the Docker container and copy it to the build environment
       - name: Export toolchain
@@ -102,7 +102,7 @@ jobs:
           echo "Copying toolchain from Docker container to host"
           docker cp $container:/home/develop/x-tools.tar.xz x-tools-${{ matrix.triple }}-gcc${{ matrix.gcc-version }}.tar.xz
           docker rm $container
-          
+
       - name: Upload toolchain
         uses: actions/upload-artifact@v4
         with:
@@ -128,5 +128,3 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # cache-from: type=gha
-          # cache-to: type=gha,mode=max
