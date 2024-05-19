@@ -80,12 +80,14 @@ COPY --chown=develop:develop --from=config /config-${HOST_TRIPLE}/* /home/develo
 
 FROM ubuntu:jammy
 
+ARG HOST_TRIPLE
+
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
     apt-get install --no-install-recommends -y \
         ninja-build cmake make bison flex \
-        tar xz-utils gzip zip unzip bzip2 \
-        ca-certificates wget git && \
+        tar xz-utils gzip zip unzip bzip2 zstd \
+        ca-certificates wget git sudo && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
@@ -97,6 +99,9 @@ RUN useradd -m develop && \
 
 USER develop
 WORKDIR /home/develop
+
+ENV TOOLCHAIN_PATH=/home/develop/opt/x-tools/${HOST_TRIPLE}
+ENV PATH=${TOOLCHAIN_PATH}/bin:$PATH
 
 # Copy the toolchain
 COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
