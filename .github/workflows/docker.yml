@@ -31,9 +31,7 @@ jobs:
         gcc-version:
           - '14'
           - '13'
-        include:
-          - triple: x86_64-bionic-linux-gnu
-            gcc-version: '12'
+          - '12'
 
     steps:
       - name: Checkout repository
