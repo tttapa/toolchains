@@ -5,6 +5,7 @@ from platform_config import (
     cmake_system_name,
     cmake_system_processor,
     cpack_debian_architecture,
+    lib_dir_32_64,
     multiarch_lib_dir,
 )
 
@@ -40,6 +41,7 @@ set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "{CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 # Toolchain and sysroot
 set(TOOLCHAIN_DIR "${{CMAKE_CURRENT_LIST_DIR}}/${{CROSS_GNU_TRIPLE}}")
 # set(CMAKE_SYSROOT "${{TOOLCHAIN_DIR}}/${{CROSS_GNU_TRIPLE}}/sysroot")
+list(APPEND CMAKE_BUILD_RPATH "${{TOOLCHAIN_DIR}}/${{CROSS_GNU_TRIPLE}}/{LIB_DIR_32_64}")
 
 # Compiler binaries
 set(CMAKE_C_COMPILER "${{TOOLCHAIN_DIR}}/bin/${{CROSS_GNU_TRIPLE}}-gcc"
@@ -57,6 +59,7 @@ def get_cmake_toolchain_file(cfg: PlatformConfig):
         "CMAKE_SYSTEM_NAME": cmake_system_name(cfg),
         "CROSS_GNU_TRIPLE": str(cfg),
         "CMAKE_LIBRARY_ARCHITECTURE": multiarch_lib_dir(cfg),
+        "LIB_DIR_32_64": lib_dir_32_64(cfg),
         "ARCH_FLAGS": arch_flags(cfg),
         "CPACK_DEBIAN_PACKAGE_ARCHITECTURE": cpack_debian_architecture(cfg),
     }

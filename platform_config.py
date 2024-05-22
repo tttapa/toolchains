@@ -24,6 +24,17 @@ def multiarch_lib_dir(cfg: PlatformConfig):
     return "-".join((arch, cfg.kernel, cfg.system))
 
 
+def lib_dir_32_64(cfg: PlatformConfig):
+    lib = {
+        "armv6": "lib",
+        "armv7": "lib",
+        "armv8": "lib",
+        "aarch64": "lib64",
+        "x86_64": "lib64",
+    }
+    return lib.get(cfg.cpu, "lib")
+
+
 def cmake_system_processor(cfg: PlatformConfig):
     return cfg.cpu
 
