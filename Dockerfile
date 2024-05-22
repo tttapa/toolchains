@@ -15,7 +15,8 @@ RUN python3 gen-conan-profile.py ${HOST_TRIPLE} ${GCC_VERSION} /config-${HOST_TR
 FROM centos:7 as ct-ng
 
 # Install dependencies to build crosstool-ng and the toolchain
-RUN yum -y update && \
+RUN yum -y update ca-certificates && \
+    yum -y update && \
     yum install -y epel-release && \
     yum install -y autoconf gperf bison file flex texinfo help2man gcc-c++ \
     libtool make patch ncurses-devel python36-devel perl-Thread-Queue bzip2 \
