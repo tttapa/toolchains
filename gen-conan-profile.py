@@ -24,6 +24,9 @@ tools.build:cxxflags={arch_flags}
 tools.build:compiler_executables={{ "c": "{{{{ os.path.join(profile_dir, "{triple}/bin/{triple}-gcc") }}}}", "cpp": "{{{{ os.path.join(profile_dir, "{triple}/bin/{triple}-g++") }}}}", "fortran": "{{{{ os.path.join(profile_dir, "{triple}/bin/{triple}-gfortran") }}}}" }}
 tools.build.cross_building:cross_build=true
 tools.build.cross_building:can_run=false
+
+[buildenv]
+PATH=+(path){{{{ os.path.join(profile_dir, "{triple}/bin") }}}}
 """
 
 
