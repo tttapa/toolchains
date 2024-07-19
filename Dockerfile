@@ -1,6 +1,6 @@
 # Python config ----------------------------------------------------------------
 
-FROM python:3 as config
+FROM python:3 AS config
 
 ARG HOST_TRIPLE
 ARG GCC_VERSION
@@ -12,16 +12,19 @@ RUN python3 gen-conan-profile.py ${HOST_TRIPLE} ${GCC_VERSION} /config-${HOST_TR
 
 # Crosstool-NG -----------------------------------------------------------------
 
-FROM centos:7 as ct-ng
+FROM rockylinux:8 AS ct-ng
 
 # Install dependencies to build crosstool-ng and the toolchain
-RUN yum -y update ca-certificates && \
-    yum -y update && \
-    yum install -y epel-release && \
-    yum install -y autoconf gperf bison file flex texinfo help2man gcc-c++ \
-    libtool make patch ncurses-devel python36-devel perl-Thread-Queue bzip2 \
-    git wget which xz unzip rsync && \
-    yum clean all
+RUN dnf -y update ca-certificates && \
+    dnf -y update && \
+    dnf install -y epel-release && \
+    dnf install -y dnf-plugins-core && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y autoconf bison file flex gcc-c++ git libtool make \
+    ncurses-devel patch perl-Thread-Queue python3-devel \
+    gperf texinfo help2man \
+    rsync unzip wget which xz bzip2 && \
+    dnf clean all
 
 # Add a user called `develop` and add him to the sudo group
 RUN useradd -m develop && echo "develop:develop" | chpasswd && \
@@ -63,7 +66,7 @@ RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.41-6.debi
 
 # Toolchain --------------------------------------------------------------------
 
-FROM ct-ng as gcc-build
+FROM ct-ng AS gcc-build
 
 ARG HOST_TRIPLE
 ARG GCC_VERSION
