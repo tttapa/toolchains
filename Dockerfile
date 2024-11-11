@@ -1,6 +1,6 @@
 # Python config ----------------------------------------------------------------
 
-FROM python:3 as config
+FROM python:3 AS config
 
 ARG HOST_TRIPLE
 ARG GCC_VERSION
@@ -12,20 +12,26 @@ RUN python3 gen-conan-profile.py ${HOST_TRIPLE} ${GCC_VERSION} /config-${HOST_TR
 
 # Crosstool-NG -----------------------------------------------------------------
 
-FROM centos:7 as ct-ng
+FROM --platform=$BUILDPLATFORM ubuntu:bionic AS ct-ng
 
 # Install dependencies to build crosstool-ng and the toolchain
-RUN yum -y update ca-certificates && \
-    yum -y update && \
-    yum install -y epel-release && \
-    yum install -y autoconf gperf bison file flex texinfo help2man gcc-c++ \
-    libtool make patch ncurses-devel python36-devel perl-Thread-Queue bzip2 \
-    git wget which xz unzip rsync && \
-    yum clean all
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        autoconf automake libtool-bin make texinfo help2man \
+        sudo file gawk patch \
+        g++ bison flex gperf \
+        libncurses5-dev \
+        perl libthread-queue-perl \
+        ca-certificates wget git \
+        bzip2 xz-utils unzip rsync && \
+    apt-get clean autoclean && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
-# Add a user called `develop` and add him to the sudo group
+# Add a user called `develop` and add them to the sudo group
 RUN useradd -m develop && echo "develop:develop" | chpasswd && \
-    usermod -aG wheel develop
+    usermod -aG sudo develop
 
 USER develop
 WORKDIR /home/develop
@@ -38,32 +44,30 @@ RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz -O- | tar xz && \
     make install && \
     cd .. && \
     rm -rf autoconf-2.72
-ENV PATH=/home/develop/.local/bin:$PATH
+ENV PATH=/home/develop/.local/bin:${PATH}
 
 # Build crosstool-ng
 RUN git clone -b master --single-branch --depth 1 \
         https://github.com/crosstool-ng/crosstool-ng.git
-WORKDIR /home/develop/crosstool-ng
-RUN git show --summary && \
+RUN cd crosstool-ng && git show --summary && \
     ./bootstrap && \
     mkdir build && cd build && \
     ../configure --prefix=/home/develop/.local && \
     make -j$(($(nproc) * 2)) && \
     make install &&  \
-    cd .. && rm -rf build
-WORKDIR /home/develop
+    cd /home/develop && rm -rf crosstool-ng
 
 # Patches
 # https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=280707&p=1700861#p1700861
-RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.41-6.debian.tar.xz -O- | \
+RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.43.1-3.debian.tar.xz -O- | \
     tar xJ debian/patches/129_multiarch_libpath.patch && \
-    mkdir -p patches/binutils/2.41 && \
-    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.41 && \
+    mkdir -p patches/binutils/2.43.1 && \
+    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.43.1 && \
     rm -rf debian
 
 # Toolchain --------------------------------------------------------------------
 
-FROM ct-ng as gcc-build
+FROM --platform=$BUILDPLATFORM ct-ng AS gcc-build
 
 ARG HOST_TRIPLE
 ARG GCC_VERSION
@@ -75,34 +79,41 @@ RUN [ -n "${GCC_VERSION}" ] && { echo "CT_GCC_V_${GCC_VERSION}=y" >> ${HOST_TRIP
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
+
+RUN chmod +w /home/develop/x-tools/${HOST_TRIPLE}
 COPY --chown=develop:develop --from=config /config-${HOST_TRIPLE}/* /home/develop/x-tools
+RUN chmod -w /home/develop/x-tools/${HOST_TRIPLE}
 
-# Build container --------------------------------------------------------------
+# Build container (base) -------------------------------------------------------
 
-FROM ubuntu:jammy
-
-ARG HOST_TRIPLE
+FROM ubuntu:noble AS gcc-dev-base
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
     apt-get install --no-install-recommends -y \
         ninja-build cmake make bison flex \
         tar xz-utils gzip zip unzip bzip2 zstd \
-        ca-certificates wget git sudo && \
+        ca-certificates wget git sudo file && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Add a user called `develop` and add him to the sudo group
-RUN useradd -m develop && \
-    echo "develop:develop" | chpasswd && \
-    adduser develop sudo
+# Add a user called `develop` and add them to the sudo group
+RUN useradd -m develop && echo "develop:develop" | chpasswd && \
+    usermod -aG sudo develop
 
 USER develop
 WORKDIR /home/develop
 
+# Build container --------------------------------------------------------------
+
+FROM gcc-dev-base AS gcc-dev
+
+ARG HOST_TRIPLE
+
 ENV TOOLCHAIN_PATH=/home/develop/opt/x-tools/${HOST_TRIPLE}
-ENV PATH=${TOOLCHAIN_PATH}/bin:$PATH
+ENV PATH=${TOOLCHAIN_PATH}/bin:${PATH}
 
 # Copy the toolchain
-COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
+COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools/${HOST_TRIPLE} ${TOOLCHAIN_PATH}
+RUN ${HOST_TRIPLE}-g++ --version
