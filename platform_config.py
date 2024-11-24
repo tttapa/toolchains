@@ -52,6 +52,9 @@ def arch_flags(cfg: PlatformConfig):
             "aarch64": "-mcpu=cortex-a53+crc+simd",
             "armv8": "-mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard",
         },
+        "neon": {
+            "armv7": "-mfpu=neon -mfloat-abi=hard",
+        },
         "bionic": {
             "x86_64": "-march=haswell",
         },
