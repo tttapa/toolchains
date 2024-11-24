@@ -115,5 +115,5 @@ ENV TOOLCHAIN_PATH=/home/develop/opt/x-tools/${HOST_TRIPLE}
 ENV PATH=${TOOLCHAIN_PATH}/bin:${PATH}
 
 # Copy the toolchain
-COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools/${HOST_TRIPLE} ${TOOLCHAIN_PATH}
+COPY --chown=develop:develop --from=gcc-build /home/develop/x-tools /home/develop/opt/x-tools
 RUN ${HOST_TRIPLE}-g++ --version
