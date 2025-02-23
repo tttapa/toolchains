@@ -5,8 +5,8 @@ distributions.
 
 - **Languages**: C, C++, Fortran
 - **Architectures**: x86-64, ARM64, ARMv8, ARMv7, ARMv6
-- **Glibc**: 2.27 and later (2.17 for `x86_64-centos7-linux-gnu`)
-- **Linux**: 4.15 and later (3.10 for `x86_64-centos7-linux-gnu`)
+- **Glibc**: 2.27 and later (2.17 for `x86_64-centos7-linux-gnu`, 2.31 for `x86_64-focal-linux-gnu`)
+- **Linux**: 4.15 and later (3.10 for `x86_64-centos7-linux-gnu`, 5.4 for `x86_64-focal-linux-gnu`)
 - **Distributions**: Debian 10 Buster, Ubuntu 18.04 Bionic, Rocky 8 and later
 
 The toolchains themselves can be used on any x86-64 system running Debian 10
@@ -26,6 +26,7 @@ Direct links are available in the table below:
 
 | Target triplet | GCC 14.2 | GCC 13.3 | GCC 12.4 | Supported hardware | Supported distributions |
 |---------------:|:--------:|:--------:|:--------:|:-------------------|:------------------------|
+| `x86_64-focal-linux-gnu` | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc14.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc12.tar.xz) | 64-bit x86 Intel/AMD | Ubuntu 20.04 Focal, Debian 11 Bullseye, Rocky 9 and later |
 | `x86_64-bionic-linux-gnu` | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc14.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc12.tar.xz) | 64-bit x86 Intel/AMD | Ubuntu 18.04 Bionic, Debian 10 Buster, Rocky 8 and later |
 | `x86_64-centos7-linux-gnu` | - | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-centos7-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-centos7-linux-gnu-gcc12.tar.xz) | 64-bit x86 Intel/AMD | CentOS 7 and later |
 | `aarch64-rpi3-linux-gnu` | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-aarch64-rpi3-linux-gnu-gcc14.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-aarch64-rpi3-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-aarch64-rpi3-linux-gnu-gcc12.tar.xz) | 64-bit ARMv8 (RPi 2B rev. 1.2, RPi 3B/3B+, CM 3, RPi 4B/400, CM 4, RPi Zero 2 W, RPi 5) | Ubuntu 18.04 Bionic, Debian 10 Buster, Rocky 8 and later |

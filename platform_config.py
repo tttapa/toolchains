@@ -58,6 +58,9 @@ def arch_flags(cfg: PlatformConfig):
         "bionic": {
             "x86_64": "-march=haswell",
         },
+        "focal": {
+            "x86_64": "-march=haswell",
+        },
         "centos7": {
             "x86_64": "",
         },
@@ -98,6 +101,7 @@ def python_arch(cfg: PlatformConfig):
             "rpi3": "manylinux_2_27",
             "centos7": "manylinux_2_17",
             "bionic": "manylinux_2_27",
+            "focal": "manylinux_2_31",
         }.get(cfg.vendor, os)
     return "_".join((os, arch))
 

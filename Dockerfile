@@ -20,6 +20,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
         autoconf automake libtool-bin make texinfo help2man \
         sudo file gawk patch \
+        python3 \
         g++ bison flex gperf \
         libncurses5-dev \
         perl libthread-queue-perl \
@@ -47,9 +48,11 @@ RUN wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz -O- | tar xz && \
 ENV PATH=/home/develop/.local/bin:${PATH}
 
 # Build crosstool-ng
-RUN git clone -b master --single-branch --depth 1 \
+RUN git clone -b master --single-branch \
         https://github.com/crosstool-ng/crosstool-ng.git
-RUN cd crosstool-ng && git show --summary && \
+RUN cd crosstool-ng && \
+    git checkout 7d8717a5bea034bfbd85b46f0e2a084c7441a483 && \
+    git show --summary && \
     ./bootstrap && \
     mkdir build && cd build && \
     ../configure --prefix=/home/develop/.local && \
