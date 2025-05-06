@@ -30,12 +30,15 @@ jobs:
           - 'x86_64-bionic-linux-gnu'
           - 'x86_64-focal-linux-gnu'
         gcc-version:
+          - '15'
           - '14'
           - '13'
           - '12'
         exclude:
           - triple: 'x86_64-centos7-linux-gnu'
             gcc-version: '14'
+          - triple: 'x86_64-centos7-linux-gnu'
+            gcc-version: '15'
 
     steps:
       - name: Checkout repository

@@ -51,7 +51,7 @@ ENV PATH=/home/develop/.local/bin:${PATH}
 RUN git clone -b master --single-branch \
         https://github.com/crosstool-ng/crosstool-ng.git
 RUN cd crosstool-ng && \
-    git checkout 7d8717a5bea034bfbd85b46f0e2a084c7441a483 && \
+    git checkout 027213fb5d2c782621cacd1909eeb42dd5462f69 && \
     git show --summary && \
     ./bootstrap && \
     mkdir build && cd build && \
