@@ -24,7 +24,7 @@ so you cannot use the default compilers in your system's package manager.
 The ready-to-use toolchain tarballs can be downloaded from the [Releases page](https://github.com/tttapa/toolchains/releases).  
 Direct links are available in the table below:
 
-| Target triplet | GCC 15.1 | GCC 14.2 | GCC 13.3 | GCC 12.4 | Supported hardware | Supported distributions |
+| Target triplet | GCC 15.1 | GCC 14.3 | GCC 13.4 | GCC 12.4 | Supported hardware | Supported distributions |
 |---------------:|:--------:|:--------:|:--------:|:--------:|:-------------------|:------------------------|
 | `x86_64-focal-linux-gnu` | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc15.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc14.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-focal-linux-gnu-gcc12.tar.xz) | 64-bit x86 Intel/AMD | Ubuntu 20.04 Focal, Debian 11 Bullseye, Rocky 9 and later |
 | `x86_64-bionic-linux-gnu` | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc15.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc14.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc13.tar.xz) | [⬇️](https://github.com/tttapa/toolchains/releases/latest/download/x-tools-x86_64-bionic-linux-gnu-gcc12.tar.xz) | 64-bit x86 Intel/AMD | Ubuntu 18.04 Bionic, Debian 10 Buster, Rocky 8 and later |
