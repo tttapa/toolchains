@@ -67,7 +67,6 @@ RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.44-3.debi
     mkdir -p patches/binutils/2.44 && \
     mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.44 && \
     rm -rf debian
-COPY --chown=develop:develop patches patches
 
 # Toolchain --------------------------------------------------------------------
 
