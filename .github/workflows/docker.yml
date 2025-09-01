@@ -89,6 +89,7 @@ jobs:
           build-args: |
             HOST_TRIPLE=${{ matrix.triple }}
             GCC_VERSION=${{ matrix.gcc-version }}
+            PKG_VERSION=${{ github.event.release.tag_name || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || github.sha }}
           load: true
           tags: ${{ env.TEMPORARY_TAG }}
           cache-from: type=gha,scope=${{ matrix.triple }}-gcc${{ matrix.gcc-version }}
@@ -130,6 +131,7 @@ jobs:
           build-args: |
             HOST_TRIPLE=${{ matrix.triple }}
             GCC_VERSION=${{ matrix.gcc-version }}
+            PKG_VERSION=${{ github.event.release.tag_name || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || github.sha }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

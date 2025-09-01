@@ -74,11 +74,13 @@ FROM --platform=$BUILDPLATFORM ct-ng AS gcc-build
 
 ARG HOST_TRIPLE
 ARG GCC_VERSION
+ARG PKG_VERSION
 
 # Build the toolchain
 COPY --chown=develop:develop ${HOST_TRIPLE}.defconfig .
 COPY --chown=develop:develop ${HOST_TRIPLE}.env .
 RUN [ -n "${GCC_VERSION}" ] && { echo "CT_GCC_V_${GCC_VERSION}=y" >> ${HOST_TRIPLE}.defconfig; }
+RUN [ -n "${PKG_VERSION}" ] && { echo "CT_TOOLCHAIN_PKGVERSION=\"tttapa/toolchains@${PKG_VERSION}\"" >> ${HOST_TRIPLE}.defconfig; }
 RUN cp ${HOST_TRIPLE}.defconfig defconfig && ct-ng defconfig
 RUN . ./${HOST_TRIPLE}.env && \
     ct-ng build || { cat build.log && false; } && rm -rf .build
