@@ -18,7 +18,7 @@ FROM --platform=$BUILDPLATFORM debian:bullseye AS ct-ng
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
     apt-get install -y --no-install-recommends \
-        autoconf automake libtool-bin make texinfo help2man \
+        autoconf automake pkg-config libtool-bin make texinfo help2man \
         sudo file gawk patch \
         python3 \
         g++ bison flex gperf \
@@ -51,8 +51,7 @@ ENV PATH=/home/develop/.local/bin:${PATH}
 RUN git clone -b master --single-branch \
         https://github.com/crosstool-ng/crosstool-ng.git && \
     cd crosstool-ng && \
-    git fetch origin refs/pull/2502/head:pr/2502 && \
-    git checkout 43780e61fc95677d2fa7d042f32f889da064c6a3 && \
+    git checkout 2e5d0b813867c4bca820592ff01775aba1367e0f && \
     git show --summary && \
     ./bootstrap && \
     mkdir build && cd build && \
@@ -64,10 +63,10 @@ RUN git clone -b master --single-branch \
 # Patches
 # https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=280707&p=1700861#p1700861
 # See https://packages.debian.org/sid/binutils for an up-to-date download URL
-RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.46-3.debian.tar.xz -O- | \
+RUN wget https://ftp.debian.org/debian/pool/main/b/binutils/binutils_2.47-2.debian.tar.xz -O- | \
     tar xJ debian/patches/129_multiarch_libpath.patch && \
-    mkdir -p patches/binutils/2.46.0 && \
-    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.46.0 && \
+    mkdir -p patches/binutils/2.47.0 && \
+    mv debian/patches/129_multiarch_libpath.patch patches/binutils/2.47.0 && \
     rm -rf debian
 
 # Toolchain --------------------------------------------------------------------
